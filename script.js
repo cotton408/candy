@@ -66,14 +66,12 @@ document.getElementById('close-dialog').addEventListener('click',closeDialog);
 dialog.addEventListener('cancel',event=>{event.preventDefault();closeDialog()});
 dialog.addEventListener('click',event=>{const rect=dialog.getBoundingClientRect();if(event.target===dialog&&(event.clientX<rect.left||event.clientX>rect.right||event.clientY<rect.top||event.clientY>rect.bottom))closeDialog()});
 
-// Pause automatic slides for keyboard focus, hover, and hidden tabs.
+// Automatically crossfade slides while the page is visible.
 const slideshow = document.querySelector('.hero-slideshow');
 const slides = [...slideshow.querySelectorAll('.hero-slide')];
 const slideDots = [...slideshow.querySelectorAll('[data-slide]')];
-const pauseSlides = slideshow.querySelector('.slide-pause');
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
-let activeSlide = 0, slideTimer, slidePaused = reducedMotion.matches;
-let slideHovered = false, slideFocused = false;
+let activeSlide = 0, slideTimer;
 function showSlide(index) {
   if (!slides[index].complete || !slides[index].naturalWidth) return;
   activeSlide = index;
@@ -85,20 +83,11 @@ function showSlide(index) {
 }
 function scheduleSlides() {
   clearInterval(slideTimer);
-  if (!slidePaused && !slideHovered && !slideFocused && !document.hidden)
+  if (!document.hidden && !reducedMotion.matches)
     slideTimer = setInterval(() => showSlide((activeSlide + 1) % slides.length), 5000);
 }
-function updatePauseButton() {
-  pauseSlides.textContent = slidePaused ? '자동 재생 ▶' : '일시정지 Ⅱ';
-  pauseSlides.setAttribute('aria-label', slidePaused ? '자동 전환 시작' : '자동 전환 일시정지');
-  scheduleSlides();
-}
+
 slideDots.forEach((button, index) => button.addEventListener('click', () => { showSlide(index); scheduleSlides(); }));
-pauseSlides.addEventListener('click', () => { slidePaused = !slidePaused; updatePauseButton(); });
-slideshow.addEventListener('mouseenter', () => { slideHovered = true; scheduleSlides(); });
-slideshow.addEventListener('mouseleave', () => { slideHovered = false; scheduleSlides(); });
-slideshow.addEventListener('focusin', () => { slideFocused = true; scheduleSlides(); });
-slideshow.addEventListener('focusout', event => { slideFocused = slideshow.contains(event.relatedTarget); scheduleSlides(); });
 document.addEventListener('visibilitychange', scheduleSlides);
-reducedMotion.addEventListener('change', event => { slidePaused = event.matches; updatePauseButton(); });
-updatePauseButton();
+reducedMotion.addEventListener('change', scheduleSlides);
+scheduleSlides();
