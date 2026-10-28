@@ -7,7 +7,6 @@ const profiles = {
   "jack": {
     "name": "잭",
     "meta": "사념체 · 나이 불명 (외견 22세) · 182cm",
-    "quote": "“여..여기를 어떻게 알고 찾아오신 거예요..?”",
     "intro": "백색 피부에 밝은 잿빛 머리, 흐릿한 보랏빛 눈. 검은 셔츠와 바지 위로 낡은 흰 천 후드망토를 두른 존재. 온화하고 속이 깊지만, 고개를 숙이거나 손가락을 만지작거리며 말을 고릅니다."
   }
 };
@@ -60,7 +59,7 @@ function selectFloor(index){[...floorButtons.children].forEach((button,i)=>butto
 selectFloor(0);
 const dialog=document.getElementById('character-dialog');
 let closing=false,lastTrigger;
-document.querySelectorAll('[data-character]').forEach(button=>button.addEventListener('click',()=>{if(closing)return;lastTrigger=button;const profile=profiles[button.dataset.character];document.getElementById('dialog-body').innerHTML=`<div class="modal-content"><p class="eyebrow">CHARACTER INTRODUCTION</p><h2 id="dialog-title">${profile.name}</h2><p class="profile-meta">${profile.meta}</p>${profile.quote ? `<blockquote>${profile.quote}</blockquote>` : ''}<p>${profile.intro}</p></div>`;dialog.showModal();document.body.style.overflow='hidden';requestAnimationFrame(()=>requestAnimationFrame(()=>dialog.classList.add('visible')))}));
+document.querySelectorAll('[data-character]').forEach(button=>button.addEventListener('click',()=>{if(closing)return;lastTrigger=button;const profile=profiles[button.dataset.character];document.getElementById('dialog-body').innerHTML=`<div class="modal-content"><p class="eyebrow">CHARACTER INTRODUCTION</p><h2 id="dialog-title">${profile.name}</h2><p class="profile-meta">${profile.meta}</p><p>${profile.intro}</p></div>`;dialog.showModal();document.body.style.overflow='hidden';requestAnimationFrame(()=>requestAnimationFrame(()=>dialog.classList.add('visible')))}));
 function closeDialog(){if(closing||!dialog.open)return;closing=true;dialog.classList.remove('visible');setTimeout(()=>{dialog.close();document.body.style.overflow='';closing=false;lastTrigger?.focus()},matchMedia('(prefers-reduced-motion: reduce)').matches?0:230)}
 document.getElementById('close-dialog').addEventListener('click',closeDialog);
 dialog.addEventListener('cancel',event=>{event.preventDefault();closeDialog()});
